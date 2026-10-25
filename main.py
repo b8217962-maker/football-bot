@@ -228,6 +228,21 @@ def main() -> None:
             "Telegram rejected BOT_TOKEN. Add a valid, newly issued token in Replit Secrets."
         )
     except Exception as error:
+        from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
+
+class SimpleHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is alive!")
+
+def run_server():
+    server = HTTPServer(('0.0.0.0', 10000), SimpleHandler)
+    server.serve_forever()
+
+# Запускаем веб-сервер в фоне для Render, чтобы он не ругался на порты
+threading.Thread(target=run_server, daemon=True).start()
         logger.error("The bot stopped unexpectedly (%s).", type(error).__name__)
 
 
